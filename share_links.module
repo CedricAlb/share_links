@@ -1,0 +1,61 @@
+<?php
+
+/**
+ * @file
+ * Contains share_links.module..
+ */
+
+use Drupal\node\NodeInterface;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_node_links_alter().
+ */
+function share_links_node_links_alter(array &$links, NodeInterface $entity, array &$context) {
+  // @TODO create a settings page to select the bundles
+  if ($context['view_mode'] != 'rss' && ($entity->bundle() == 'article' || $entity->bundle() == 'video')) {
+
+    global $base_url;
+    $share_links = array();
+
+    $entity_label_stripped = strip_tags($entity->label());
+    $entity_url = $base_url.$entity->url();
+
+    $share_links['share-links-twitter'] = array(
+      'title' => t('<span class="visually-hidden">Share @title on </span>Twitter', array(
+        '@title' => $entity_label_stripped,
+      )),
+      'url' => Url::fromUri("http://twitter.com/share?url=$entity_url&amp;text=$entity_label_stripped"),
+      'language' => $entity->language(),
+      'attributes' => array(
+        'title' => $entity_label_stripped,
+        'class' => 'sharepopup',
+        'rel' => 'nofollow',
+      ),
+    );
+    $share_links['share-links-facebook'] = array(
+      'title' => t('<span class="visually-hidden">Share @title on </span>Facebook', array(
+        '@title' => $entity_label_stripped,
+      )),
+      'url' => Url::fromUri("http://www.facebook.com/sharer.php?u=$entity_url&amp;t=$entity_label_stripped"),
+      'language' => $entity->language(),
+      'attributes' => array(
+        'title' => $entity_label_stripped,
+        'class' => 'sharepopup',
+        'rel' => 'nofollow',
+      ),
+    );
+    //@TODO Pinterest link
+    //http://pinterest.com/pin/create/bookmarklet/?media=http%3A//internet.lol/sites/internet.lol/files/logotemp.png&amp;url=http%3A//internet.lol/node/14&amp;title=titreducontenu&amp;is_video=false&amp;description=descriptionducontenu
+    //@TODO Google+ link
+    //https://plus.google.com/share?url=http%3A//internet.lol/node/14
+
+    $links['share_links'] = array(
+      '#theme' => 'links__node__share_links',
+      '#links' => $share_links,
+      '#attributes' => array('class' => array('links', 'inline', 'share-links')),
+      '#weight' => 99,
+      '#attached' => array('library' => array('share_links/share_links.sharepopup')),
+    );
+  }
+}

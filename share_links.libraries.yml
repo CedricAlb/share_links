@@ -1,0 +1,6 @@
+share_links.sharepopup:
+  version: 1.x
+  js:
+    js/sharepopup.js: {}
+  dependencies:
+    - core/jquery

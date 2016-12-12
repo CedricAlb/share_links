@@ -1,0 +1,5 @@
+name: Share Links
+type: module
+description: Links to share content on social networks
+core: 8.x
+package: Custom
